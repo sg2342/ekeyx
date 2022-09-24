@@ -2,6 +2,7 @@
 
 -export([split_secret/3, recover_secret/1]).
 
+-define(A, ekeyx_shamir_arithmetic).
 
 -spec split_secret(K :: non_neg_integer(), N :: non_neg_integer(),
 		   Secret :: binary()) ->
@@ -17,25 +18,28 @@ split_secret(K, N, Secret)
     set_random_seed(), % generate random X coordinates
     Xcoordinates = rand_shuffle(lists:seq(0,254)),
     SharesInit = lists:duplicate(N,[]),
-    
-    A = ekeyx_shamir_arithmetic,
+
+    Zip = fun(L0,L1) when length(L0) < length(L1) ->
+		  lists:zip(L0, lists:sublist(L1, length(L0)));
+	     (L0,L1) when length(L0) >= length(L1) ->
+		  lists:zip(lists:sublist(L0, length(L1)), L1) end,
     Shares =
 	lists:foldl(
 	  fun(Val, Shares) ->
-		  Poly = A:polynomial(Val, K-1),
+		  Poly = ?A:polynomial(Val, K-1),
 		  lists:map(
 		    fun({Xval, Yacc}) ->
-			    X = A:aDD(Xval, 1),
-			    Y = A:evaluate(Poly, X),
+			    X = ?A:aDD(Xval, 1),
+			    Y = ?A:evaluate(Poly, X),
 			    [Yacc, Y]
 		    end,
-		    zip(Xcoordinates, Shares))
+		    Zip(Xcoordinates, Shares))
 	  end,
 	  SharesInit,
 	  binary:bin_to_list(Secret)
 	 ),
-    [binary:list_to_bin([Share, A:aDD(X, 1)])||
-	{Share, X} <- zip(Shares, Xcoordinates)].
+    [binary:list_to_bin([Share, ?A:aDD(X, 1)])||
+	{Share, X} <- Zip(Shares, Xcoordinates)].
 
 
 -spec recover_secret(Shares :: [binary()]) -> Secret :: binary().
@@ -50,24 +54,17 @@ recover_secret(Shares0) ->
 	orelse throw("duplicate shares"),
     OtherSize == []
 	orelse throw("shares must match in size"),
-   
+
     Res = lists:map(
 	    fun(Idx) ->
 		    YSamples = [lists:nth(Idx + 1, Share) || Share <- Shares],
-		    ekeyx_shamir_arithmetic:interpolate(XSamples, YSamples, 0)
+		    ?A:interpolate(XSamples, YSamples, 0)
 	    end, lists:seq(0, Ylen - 1)),
     binary:list_to_bin(Res).
-    
-
-zip(L0,L1) when length(L0) < length(L1) ->
-    lists:zip(L0, lists:sublist(L1, length(L0)));
-zip(L0,L1) when length(L0) > length(L1) ->
-    lists:zip(lists:sublist(L0, length(L1)), L1);
-zip(L0,L1) -> lists:zip(L0,L1).
 
 
 set_random_seed() ->
-    % https://hashrocket.com/blog/posts/the-adventures-of-generating-random-numbers-in-erlang-and-elixir
+    %% https://hashrocket.com/blog/posts/the-adventures-of-generating-random-numbers-in-erlang-and-elixir
     <<I1:32/unsigned-integer, I2:32/unsigned-integer, I3:32/unsigned-integer>> =
 	crypto:strong_rand_bytes(12),
     rand:seed(exsplus, {I1, I2, I3}).
