@@ -4,9 +4,9 @@
 
 -define(A, ekeyx_shamir_arithmetic).
 
--spec split_secret(K :: non_neg_integer(), N :: non_neg_integer(),
-		   Secret :: binary()) ->
-	  Shares :: [binary()].
+-spec split_secret(K :: pos_integer(), N :: pos_integer(),
+		   Secret :: nonempty_binary()) ->
+	  Shares :: nonempty_list(binary()).
 split_secret(K, N, Secret)
   when is_integer(N),
        is_integer(K),
@@ -42,7 +42,8 @@ split_secret(K, N, Secret)
 	{Share, X} <- Zip(Shares, Xcoordinates)].
 
 
--spec recover_secret(Shares :: [binary()]) -> Secret :: binary().
+-spec recover_secret(Shares :: nonempty_list(binary())) ->
+	  Secret :: nonempty_binary().
 recover_secret(Shares0) ->
     Shares = lists:map(fun binary:bin_to_list/1, Shares0),
     Sizes = [length(Share) || Share <- Shares],

@@ -2,7 +2,7 @@
 
 -export([polynomial/2, evaluate/2, interpolate/3, aDD/2, mUL/2, dIV/2]).
 
--type polynomial() :: [non_neg_integer()|[non_neg_integer()]].
+-type polynomial() :: nonempty_list(non_neg_integer()).
 
 -spec polynomial(non_neg_integer(), non_neg_integer()) -> polynomial().
 polynomial(Intercept, Degree) ->
