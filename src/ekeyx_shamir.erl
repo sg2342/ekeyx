@@ -2,8 +2,6 @@
 
 -export([split_secret/3, recover_secret/1]).
 
--define(A, ekeyx_shamir_arithmetic).
-
 -spec split_secret(
     K :: pos_integer(),
     N :: pos_integer(),
@@ -33,11 +31,11 @@ split_secret(K, N, Secret) when
     Shares =
         lists:foldl(
             fun(Val, Shares) ->
-                Poly = ?A:polynomial(Val, K - 1),
+                Poly = ekeyx_shamir_arithmetic:polynomial(Val, K - 1),
                 lists:map(
                     fun({Xval, Yacc}) ->
-                        X = ?A:aDD(Xval, 1),
-                        Y = ?A:evaluate(Poly, X),
+                        X = ekeyx_shamir_arithmetic:op_add(Xval, 1),
+                        Y = ekeyx_shamir_arithmetic:evaluate(Poly, X),
                         [Yacc, Y]
                     end,
                     Zip(Xcoordinates, Shares)
@@ -47,7 +45,7 @@ split_secret(K, N, Secret) when
             binary:bin_to_list(Secret)
         ),
     [
-        binary:list_to_bin([Share, ?A:aDD(X, 1)])
+        binary:list_to_bin([Share, ekeyx_shamir_arithmetic:op_add(X, 1)])
      || {Share, X} <- Zip(Shares, Xcoordinates)
     ].
 
@@ -68,14 +66,14 @@ recover_secret(Shares0) ->
     Res = lists:map(
         fun(Idx) ->
             YSamples = [lists:nth(Idx + 1, Share) || Share <- Shares],
-            ?A:interpolate(XSamples, YSamples, 0)
+            ekeyx_shamir_arithmetic:interpolate(XSamples, YSamples, 0)
         end,
         lists:seq(0, Ylen - 1)
     ),
     binary:list_to_bin(Res).
 
+%https://hashrocket.com/blog/posts/the-adventures-of-generating-random-numbers-in-erlang-and-elixir
 set_random_seed() ->
-    %% https://hashrocket.com/blog/posts/the-adventures-of-generating-random-numbers-in-erlang-and-elixir
     <<I1:32/unsigned-integer, I2:32/unsigned-integer, I3:32/unsigned-integer>> =
         crypto:strong_rand_bytes(12),
     rand:seed(exsplus, {I1, I2, I3}).

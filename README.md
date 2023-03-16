@@ -10,7 +10,7 @@ byte-compatible to Hashicorp Vault's implementation of Shamir's Secret Sharing (
 
 ## Test
 
-    $ rebar3 as test dialyzer,xref,ct,cover
+    $ rebar3 as test do dialyzer,xref,fmt,ct,cover,lint
 
 ## Interop Test
 

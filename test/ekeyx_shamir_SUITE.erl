@@ -43,11 +43,9 @@ all() ->
         cover
     ].
 
--define(M, ekeyx_shamir).
-
 basic_split(_Config) ->
     Secret = <<"Test">>,
-    Shares = ?M:split_secret(3, 5, Secret),
+    Shares = ekeyx_shamir:split_secret(3, 5, Secret),
     5 = length(Shares),
     lists:foreach(
         fun(Share) ->
@@ -58,7 +56,7 @@ basic_split(_Config) ->
 
 basic_recover_static_short(_Config) ->
     Shares = lists:map(fun binary:decode_hex/1, [<<"0E4A">>, <<"9954">>]),
-    <<"t">> = ?M:recover_secret(Shares).
+    <<"t">> = ekeyx_shamir:recover_secret(Shares).
 
 basic_recover_static_long(_Config) ->
     Shares = lists:map(
@@ -71,33 +69,33 @@ basic_recover_static_long(_Config) ->
             <<"25A7FC3F05">>
         ]
     ),
-    <<"test">> = ?M:recover_secret(Shares).
+    <<"test">> = ekeyx_shamir:recover_secret(Shares).
 
 basic_split_and_recover_short(_Config) ->
     Secret = <<"t">>,
-    Shares = ?M:split_secret(2, 2, Secret),
-    Secret = ?M:recover_secret(Shares).
+    Shares = ekeyx_shamir:split_secret(2, 2, Secret),
+    Secret = ekeyx_shamir:recover_secret(Shares).
 
 basic_split_and_recover_long(_Config) ->
     Secret = <<"super secret">>,
-    [S1, S2, S3, S4] = ?M:split_secret(2, 4, Secret),
-    Secret = ?M:recover_secret([S1, S2]),
-    Secret = ?M:recover_secret([S1, S3]),
-    Secret = ?M:recover_secret([S1, S4]),
-    Secret = ?M:recover_secret([S2, S3]),
-    Secret = ?M:recover_secret([S2, S4]),
-    Secret = ?M:recover_secret([S3, S4]).
+    [S1, S2, S3, S4] = ekeyx_shamir:split_secret(2, 4, Secret),
+    Secret = ekeyx_shamir:recover_secret([S1, S2]),
+    Secret = ekeyx_shamir:recover_secret([S1, S3]),
+    Secret = ekeyx_shamir:recover_secret([S1, S4]),
+    Secret = ekeyx_shamir:recover_secret([S2, S3]),
+    Secret = ekeyx_shamir:recover_secret([S2, S4]),
+    Secret = ekeyx_shamir:recover_secret([S3, S4]).
 
 cover(_Config) ->
     {throw, "duplicate shares"} =
         try
-            ?M:recover_secret([<<"0E4A">>, <<"9954">>, <<"9954">>])
+            ekeyx_shamir:recover_secret([<<"0E4A">>, <<"9954">>, <<"9954">>])
         catch
             C1:E1 -> {C1, E1}
         end,
     {throw, "shares must match in size"} =
         try
-            ?M:recover_secret([<<"0E">>, <<"9954">>])
+            ekeyx_shamir:recover_secret([<<"0E">>, <<"9954">>])
         catch
             C2:E2 -> {C2, E2}
         end.

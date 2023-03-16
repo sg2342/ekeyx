@@ -1,6 +1,6 @@
 -module(ekeyx_shamir_arithmetic).
 
--export([polynomial/2, evaluate/2, interpolate/3, aDD/2, mUL/2, dIV/2]).
+-export([polynomial/2, evaluate/2, interpolate/3, op_add/2, op_mul/2, op_div/2]).
 
 -type polynomial() :: nonempty_list(non_neg_integer()).
 
@@ -13,7 +13,7 @@ evaluate([R | _], X) when X == 0 -> R;
 evaluate(Poly, X) ->
     [PolyTail | PolyRestRev] = lists:reverse(Poly),
     lists:foldl(
-        fun(PolyCoef, Acc) -> aDD(mUL(Acc, X), PolyCoef) end,
+        fun(PolyCoef, Acc) -> op_add(op_mul(Acc, X), PolyCoef) end,
         PolyTail,
         PolyRestRev
     ).
@@ -28,19 +28,19 @@ interpolate(Xsamples, Ysamples, X) when
             InnerRng = [V || V <- lists:seq(0, Limit), V =/= I],
             Basis = lists:foldl(
                 fun(J, B) ->
-                    mUL(
+                    op_mul(
                         B,
-                        dIV(
-                            aDD(X, AT(Xsamples, J)),
-                            aDD(AT(Xsamples, I), AT(Xsamples, J))
+                        op_div(
+                            op_add(X, AT(Xsamples, J)),
+                            op_add(AT(Xsamples, I), AT(Xsamples, J))
                         )
                     )
                 end,
                 1,
                 InnerRng
             ),
-            Group = mUL(Basis, AT(Ysamples, I)),
-            aDD(Result, Group)
+            Group = op_mul(Basis, AT(Ysamples, I)),
+            op_add(Result, Group)
         end,
         0,
         lists:seq(0, Limit)
@@ -48,20 +48,20 @@ interpolate(Xsamples, Ysamples, X) when
 interpolate(_, _, _) ->
     throw(invalid_arguments).
 
-dIV(_, 0) ->
+op_div(_, 0) ->
     throw(badarith);
-dIV(0, _) ->
+op_div(0, _) ->
     0;
-dIV(Lhs, Rhs) ->
-    T = ekeyx_shamir_tables,
-    T:exp((255 + (T:log(Lhs) - T:log(Rhs))) rem 255).
+op_div(Lhs, Rhs) ->
+    ekeyx_shamir_tables:exp(
+        (255 + (ekeyx_shamir_tables:log(Lhs) - ekeyx_shamir_tables:log(Rhs))) rem 255
+    ).
 
-aDD(Lhs, Rhs) -> Lhs bxor Rhs.
+op_add(Lhs, Rhs) -> Lhs bxor Rhs.
 
-mUL(0, _) ->
+op_mul(0, _) ->
     0;
-mUL(_, 0) ->
+op_mul(_, 0) ->
     0;
-mUL(Lhs, Rhs) ->
-    T = ekeyx_shamir_tables,
-    T:exp((T:log(Lhs) + T:log(Rhs)) rem 255).
+op_mul(Lhs, Rhs) ->
+    ekeyx_shamir_tables:exp((ekeyx_shamir_tables:log(Lhs) + ekeyx_shamir_tables:log(Rhs)) rem 255).

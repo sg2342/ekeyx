@@ -35,13 +35,12 @@ generate_and_recover(_Config) ->
     Secret = ekeyx:recover_secret([S2, S7]).
 
 generate_and_recover_base(_Config) ->
+    lists:foreach(
+        fun generate_and_recover_base1/1,
+        [binary, base16, base64]
+    ).
+
+generate_and_recover_base1(Base) ->
     Secret = <<"Test">>,
-    [_, S2, _, _, _, _, S7] =
-        ekeyx:generate_shares(2, 7, Secret, binary),
-    Secret = ekeyx:recover_secret([S2, S7], binary),
-    [S1, _, _, _, S5, _, _] =
-        ekeyx:generate_shares(2, 7, Secret, base16),
-    Secret = ekeyx:recover_secret([S1, S5], base16),
-    [_, _, S3, S4, _, _, _] =
-        ekeyx:generate_shares(2, 7, Secret, base64),
-    Secret = ekeyx:recover_secret([S3, S4], base64).
+    L = ekeyx:generate_shares(2, 7, Secret, Base),
+    Secret = ekeyx:recover_secret(lists:sublist(L, 2), Base).
