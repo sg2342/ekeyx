@@ -20,7 +20,7 @@ split_secret(K, N, Secret) when
     K >= 2
 ->
     % generate random X coordinates
-    set_random_seed(),
+    _ = set_random_seed(),
     Xcoordinates = rand_shuffle(lists:seq(0, 254)),
     SharesInit = lists:duplicate(N, []),
 
