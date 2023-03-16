@@ -56,7 +56,7 @@ split_secret(K, N, Secret) when
 recover_secret(Shares0) ->
     Shares = lists:map(fun binary:bin_to_list/1, Shares0),
     Sizes = [length(Share) || Share <- Shares],
-    [Size | OtherSize] = lists:uniq(Sizes),
+    [Size | OtherSize] = lists:usort(Sizes),
     Ylen = Size - 1,
     XSamples = [lists:last(Share) || Share <- Shares],
 
