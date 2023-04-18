@@ -10,7 +10,7 @@ byte-compatible to Hashicorp Vault's implementation of Shamir's Secret Sharing (
 
 ## Test
 
-    $ rebar3 as test do dialyzer,xref,fmt,ct,cover,lint
+    $ ERL_AFLAGS="-enable-feature maybe_expr" rebar3 as test check
 
 ## Interop Test
 
