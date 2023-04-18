@@ -1,5 +1,7 @@
 # ekeyx
 
+[![Build Status](https://github.com/sg2342/ekeyx/workflows/Common%20Test/badge.svg)](https://github.com/sg2342/ekeyx/actions?query=branch%3Amain+workflow%3A"Common+Test")
+
 Erlang reimplementation of the Elixir library [KeyX](https://github.com/elcritch/keyx).
 
 byte-compatible to Hashicorp Vault's implementation of Shamir's Secret Sharing (SSS) algorithm.
@@ -10,7 +12,7 @@ byte-compatible to Hashicorp Vault's implementation of Shamir's Secret Sharing (
 
 ## Test
 
-    $ rebar3 as test do dialyzer,xref,fmt,ct,cover,lint
+    $ ERL_AFLAGS="-enable-feature maybe_expr" rebar3 as test check
 
 ## Interop Test
 

@@ -4,6 +4,8 @@
 
 -type polynomial() :: nonempty_list(non_neg_integer()).
 
+-export_type([polynomial/0]).
+
 -spec polynomial(non_neg_integer(), non_neg_integer()) -> polynomial().
 polynomial(Intercept, Degree) ->
     [Intercept | binary:bin_to_list(crypto:strong_rand_bytes(Degree))].
