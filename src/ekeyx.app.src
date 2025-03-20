@@ -1,13 +1,14 @@
 {application, ekeyx, [
-    {description, "An OTP library"},
-    {vsn, "0.1.0"},
+    {description, "Shamir's Secret Sharing (SSS) algorithm"},
+    {vsn, "1.0.0"},
     {registered, []},
     {applications, [
         kernel,
-        stdlib
+        stdlib,
+        crypto
     ]},
     {env, []},
-    {modules, []},
+    {modules, [ekeyx, ekeyx_shamir, ekeyx_shamir_arithmetic, ekeyx_shamir_tables]},
 
     {licenses, ["Apache 2.0"]},
     {links, []}

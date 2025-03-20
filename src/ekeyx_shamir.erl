@@ -1,4 +1,5 @@
 -module(ekeyx_shamir).
+-moduledoc false.
 
 -export([split_secret/3, recover_secret/1]).
 

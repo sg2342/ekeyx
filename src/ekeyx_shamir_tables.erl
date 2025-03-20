@@ -1,4 +1,5 @@
 -module(ekeyx_shamir_tables).
+-moduledoc false.
 
 -export([log/1, exp/1]).
 
