@@ -49,17 +49,8 @@ generate_shares(K, N, Secret) ->
 -doc """
 Recover secret from shares.
 
-Number of shares must be equal or greater than the `K` parameter used to generate shares.
-""".
--spec recover_secret(Shares :: nonempty_list(binary())) ->
-    Secret :: nonempty_binary().
-recover_secret(Shares) -> ekeyx_shamir:recover_secret(Shares).
-
--doc """
-Recover secret from shares.
-
-Equivalent to
-`recover_secret(Shares, binary)`
+Number of `Shares` must be equal or greater than the `K` parameter used to generate shares.
+`Base` sets output encoding.
 """.
 -spec recover_secret(
     Shares :: nonempty_list(binary()),
@@ -68,6 +59,16 @@ Equivalent to
     Secret :: nonempty_binary().
 recover_secret(Shares, Base) ->
     ekeyx_shamir:recover_secret(decode(Shares, Base)).
+
+-doc """
+Recover secret from shares.
+
+Equivalent to
+`recover_secret(Shares, binary)`
+""".
+-spec recover_secret(Shares :: nonempty_list(binary())) ->
+    Secret :: nonempty_binary().
+recover_secret(Shares) -> ekeyx_shamir:recover_secret(Shares).
 
 encode(Shares, binary) ->
     Shares;

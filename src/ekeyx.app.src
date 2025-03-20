@@ -1,6 +1,6 @@
 {application, ekeyx, [
     {description, "Shamir's Secret Sharing (SSS) algorithm"},
-    {vsn, "1.0.0"},
+    {vsn, "1.0.1"},
     {registered, []},
     {applications, [
         kernel,
@@ -11,5 +11,5 @@
     {modules, [ekeyx, ekeyx_shamir, ekeyx_shamir_arithmetic, ekeyx_shamir_tables]},
 
     {licenses, ["Apache-2.0"]},
-    {links, []}
+    {links, [{"GitHub", "https://github.com/sg2342/ekeyx"}]}
 ]}.
