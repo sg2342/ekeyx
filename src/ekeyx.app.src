@@ -10,6 +10,6 @@
     {env, []},
     {modules, [ekeyx, ekeyx_shamir, ekeyx_shamir_arithmetic, ekeyx_shamir_tables]},
 
-    {licenses, ["Apache 2.0"]},
+    {licenses, ["Apache-2.0"]},
     {links, []}
 ]}.
