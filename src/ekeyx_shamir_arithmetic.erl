@@ -1,4 +1,5 @@
 -module(ekeyx_shamir_arithmetic).
+-moduledoc false.
 
 -export([polynomial/2, evaluate/2, interpolate/3, op_add/2, op_mul/2, op_div/2]).
 

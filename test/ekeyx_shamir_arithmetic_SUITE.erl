@@ -1,13 +1,9 @@
 -module(ekeyx_shamir_arithmetic_SUITE).
 
--include_lib("common_test/include/ct.hrl").
-
 -export([
     all/0,
     init_per_suite/1,
-    end_per_suite/1,
-    init_per_testcase/2,
-    end_per_testcase/2
+    end_per_suite/1
 ]).
 
 -export([polynomial/1, evaluate/1, interpolate/1, op_add/1, op_mul/1, op_div/1]).
@@ -15,18 +11,12 @@
 -export([cover/1]).
 
 init_per_suite(Config) ->
-    {ok, Started} = application:ensure_all_started(public_key),
+    {ok, Started} = application:ensure_all_started(crypto),
     [{started_applications, Started} | Config].
 
-end_per_suite(Config0) ->
-    {value, {_, Started}, Config} =
-        lists:keytake(started_applications, 1, Config0),
-    lists:foreach(fun application:stop/1, lists:reverse(Started)),
-    Config.
-
-init_per_testcase(_TC, Config) -> Config.
-
-end_per_testcase(_TC, Config) -> Config.
+end_per_suite(Config) ->
+    Started = proplists:get_value(started_applications, Config, []),
+    lists:foreach(fun application:stop/1, lists:reverse(Started)).
 
 all() ->
     [polynomial, evaluate, interpolate, op_add, op_mul, op_div, cover].
