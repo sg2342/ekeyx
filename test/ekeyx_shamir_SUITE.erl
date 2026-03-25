@@ -77,13 +77,13 @@ basic_split_and_recover_long(_Config) ->
     Secret = ekeyx_shamir:recover_secret([S3, S4]).
 
 cover(_Config) ->
-    {throw, "duplicate shares"} =
+    {error, "duplicate shares"} =
         try
             ekeyx_shamir:recover_secret([<<"0E4A">>, <<"9954">>, <<"9954">>])
         catch
             C1:E1 -> {C1, E1}
         end,
-    {throw, "shares must match in size"} =
+    {error, "shares must match in size"} =
         try
             ekeyx_shamir:recover_secret([<<"0E">>, <<"9954">>])
         catch
