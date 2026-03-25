@@ -60,9 +60,9 @@ recover_secret(Shares0) ->
     XSamples = [lists:last(Share) || Share <- Shares],
 
     length(XSamples) == length(lists:usort(XSamples)) orelse
-        throw("duplicate shares"),
+        error("duplicate shares"),
     OtherSize == [] orelse
-        throw("shares must match in size"),
+        error("shares must match in size"),
 
     Res = lists:map(
         fun(Idx) ->

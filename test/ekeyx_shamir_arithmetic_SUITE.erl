@@ -59,13 +59,13 @@ interpolate(_Config) ->
     L = lists:map(F, L).
 
 cover(_Config) ->
-    {throw, badarith} =
+    {error, badarith} =
         try
             ekeyx_shamir_arithmetic:op_div(1, 0)
         catch
             C1:E1 -> {C1, E1}
         end,
-    {throw, invalid_arguments} =
+    {error, invalid_arguments} =
         try
             ekeyx_shamir_arithmetic:interpolate([], [1], 5)
         catch

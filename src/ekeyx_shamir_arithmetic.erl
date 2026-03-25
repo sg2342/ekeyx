@@ -49,10 +49,10 @@ interpolate(Xsamples, Ysamples, X) when
         lists:seq(0, Limit)
     );
 interpolate(_, _, _) ->
-    throw(invalid_arguments).
+    error(invalid_arguments).
 
 op_div(_, 0) ->
-    throw(badarith);
+    error(badarith);
 op_div(0, _) ->
     0;
 op_div(Lhs, Rhs) ->
